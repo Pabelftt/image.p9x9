@@ -2,6 +2,7 @@
 const Image = require("../models/Image");
 const fs = require("fs");
 const axios = require("axios");
+const path = require("path");
 const { generateHash } = require("../utils/fileHelper");
 
 exports.dashboard = async (req,res)=>{
@@ -67,10 +68,57 @@ exports.listImages = async (req,res)=>{
   res.render("list", { images });
 };
 
-exports.apiUpload = async (req,res)=>{
-  if (!req.file) return res.status(400).json({ error: "No file" });
+exports.apiUpload = async (req, res) => {
+  try {
 
-  const url = process.env.BASE_URL + "/uploads/" + req.file.filename;
+    // CASE 1: file upload (multer)
+    if (req.file) {
+      const url = process.env.BASE_URL + "/uploads/" + req.file.filename;
 
-  res.json({ success: true, url });
+      return res.json({
+        success: true,
+        type: "file",
+        data: {
+          filename: req.file.filename,
+          url
+        }
+      });
+    }
+
+    // CASE 2: JSON URL upload
+    if (req.body.image) {
+      const response = await axios({
+        url: req.body.image,
+        responseType: "arraybuffer"
+      });
+
+      const filename = Date.now() + ".jpg";
+      const filePath = path.join(__dirname, "../public/uploads/", filename);
+
+      fs.writeFileSync(filePath, response.data);
+
+      const url = process.env.BASE_URL + "/uploads/" + filename;
+
+      return res.json({
+        success: true,
+        type: "url",
+        data: {
+          originalUrl: req.body.image,
+          filename,
+          url
+        }
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: "No file or image URL provided"
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message
+    });
+  }
 };
