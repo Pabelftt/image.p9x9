@@ -1,9 +1,215 @@
-<!-- views/list.ejs -->
-<h2>Your Images</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Your Images</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI', sans-serif;
+}
+
+body{
+  background: linear-gradient(135deg, #141e30, #243b55);
+  color:#fff;
+  padding:20px;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+}
+
+h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+/* Card */
+.card{
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 8px 20px rgba(0,0,0,0.4);
+  padding:20px;
+  border-radius:15px;
+  margin-bottom:20px;
+  text-align:center;
+}
+
+.card img{
+  width:100%;
+  max-width:250px;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+
+/* Input system */
+.input-wrapper{
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+}
+
+.input-box{
+  flex:1;
+  position:relative;
+}
+
+.input-box i{
+  position:absolute;
+  left:10px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#aaa;
+}
+
+input{
+  width:100%;
+  padding:10px 10px 10px 36px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color:#fff;
+}
+
+/* Buttons */
+.btn-group{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+button{
+  border:none;
+  padding:10px 12px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.download-btn{
+  background:#4CAF50;
+  color:#fff;
+}
+
+.copy-btn{
+  background:#2196F3;
+  color:#fff;
+}
+
+.delete-btn{
+  background:#ff4141;
+  color:#fff;
+}
+
+/* Toast */
+#toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  padding:10px 18px;
+  border-radius:6px;
+  opacity:0;
+  transition:0.4s;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🖼 Your Images</h2>
 
 <% images.forEach(img => { %>
-  <div>
-    <img src="<%= img.url %>" width="200"><br>
-    <a href="<%= img.url %>"><%= img.url %></a>
+
+<div class="card">
+
+  <img src="<%= img.url %>">
+
+  <!-- INPUT (same UX system) -->
+  <div class="input-wrapper">
+    <div class="input-box">
+      <i class="fas fa-link"></i>
+      <input id="img-<%= img._id %>" readonly value="<%= img.url %>">
+    </div>
   </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="btn-group">
+
+    <a href="<%= img.url %>" download>
+      <button class="download-btn">
+        ⬇ Download
+      </button>
+    </a>
+
+    <button class="copy-btn" onclick="copyInput('img-<%= img._id %>')">
+      📋 Copy
+    </button>
+
+    <button class="delete-btn" data-id="<%= img._id %>">
+      ❌ Delete
+    </button>
+
+  </div>
+
+</div>
+
 <% }) %>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.innerText=msg;
+  t.style.opacity="1";
+  setTimeout(()=>t.style.opacity="0",2000);
+}
+
+function copyInput(id){
+  const val=document.getElementById(id).value;
+  navigator.clipboard.writeText(val);
+  showToast("✅ Copied");
+}
+
+/* DELETE */
+document.querySelectorAll(".delete-btn").forEach(btn=>{
+  btn.addEventListener("click", async function(){
+    const id=this.getAttribute("data-id");
+
+    if(!confirm("Are you sure?")) return;
+
+    const res=await fetch("/image/delete/"+id,{
+      method:"DELETE",
+      credentials:"same-origin"
+    });
+
+    const data=await res.json();
+
+    if(data.success){
+      showToast("🗑 Deleted");
+      location.reload();
+    }else{
+      showToast("❌ Failed");
+    }
+  });
+});
+</script>
+
+</body>
+</html>

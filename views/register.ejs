@@ -1,7 +1,168 @@
-<!-- views/register.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI', sans-serif;
+}
+
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background: radial-gradient(circle at top, #1a2a3a, #0f172a);
+  color:#fff;
+  padding:20px;
+}
+
+.card{
+  width:100%;
+  max-width:420px;
+  padding:30px;
+  border-radius:18px;
+
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(18px);
+  border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 15px 35px rgba(0,0,0,0.5);
+}
+
+h2{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+h2 i{
+  color:#00c6ff;
+  margin-right:8px;
+}
+
+/* input box */
+.input-box{
+  position:relative;
+  margin-bottom:18px;
+}
+
+.input-box i{
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#9ca3af;
+  font-size:15px;
+  pointer-events:none;
+}
+
+/* input */
+input{
+  width:100%;
+  padding:12px 12px 12px 44px; /* left icon space */
+  border-radius:10px;
+
+  border:1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color:#fff;
+  font-size:14px;
+
+  transition:0.3s;
+}
+
+input:focus{
+  outline:none;
+  border-color:#00c6ff;
+  box-shadow:0 0 10px rgba(0,198,255,0.25);
+}
+
+/* button */
+button{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+
+  border:none;
+  border-radius:10px;
+
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color:#fff;
+
+  font-size:15px;
+  font-weight:600;
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  transition:0.25s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 20px rgba(0,114,255,0.3);
+}
+
+/* link */
+a{
+  display:block;
+  text-align:center;
+  margin-top:18px;
+  color:#00c6ff;
+  text-decoration:none;
+  font-size:14px;
+}
+
+a:hover{
+  color:#38bdf8;
+}
+
+a i{
+  margin-right:6px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2><i class="fa-solid fa-user-plus"></i> Register</h2>
+
 <form method="POST">
-  <input name="email" placeholder="Email"><br>
-  <input name="password" type="password" placeholder="Password"><br>
-  <button>Register</button>
+
+  <div class="input-box">
+    <i class="fa-solid fa-envelope"></i>
+    <input name="email" type="email" placeholder="Enter email" required>
+  </div>
+
+  <div class="input-box">
+    <i class="fa-solid fa-lock"></i>
+    <input name="password" type="password" placeholder="Enter password" required>
+  </div>
+
+  <button type="submit">
+    <i class="fa-solid fa-user-check"></i>
+    Register
+  </button>
+
 </form>
-<a href="/login">Login</a>
+
+<a href="/login">
+  <i class="fa-solid fa-right-to-bracket"></i> Already have account? Login
+</a>
+
+</div>
+
+</body>
+</html>

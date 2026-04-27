@@ -63,7 +63,7 @@ exports.uploadFromUrl = async (req,res)=>{
   res.send(url);
 };
 
-exports.listImages = async (req,res)=>{
+exports.listImages = async (req, res) => {
   const images = await Image.find({ user: req.user.id });
   res.render("list", { images });
 };
@@ -120,5 +120,35 @@ exports.apiUpload = async (req, res) => {
       success: false,
       message: err.message
     });
+  }
+};
+
+// DELETE IMAGE
+exports.deleteImage = async (req, res) => {
+  
+  try {
+    const image = await Image.findById(req.params.id);
+
+    if (!image) {
+      return res.status(404).json({ success: false, message: "Not found" });
+    }
+
+    // 🔐 ownership check (VERY IMPORTANT)
+    if (image.user.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: "Not allowed" });
+    }
+
+    const filePath = path.join(__dirname, "../public/uploads/", image.filename);
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    await Image.deleteOne({ _id: req.params.id });
+
+    res.json({ success: true, message: "Deleted" });
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
