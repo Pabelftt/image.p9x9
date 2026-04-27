@@ -1,0 +1,13 @@
+<!-- views/upload.ejs -->
+<h2>Upload Image</h2>
+
+<form action="/upload" method="POST" enctype="multipart/form-data">
+  <input type="file" name="image">
+  <button>Upload</button>
+</form>
+
+<h2>Upload via URL</h2>
+<form action="/upload-url" method="POST">
+  <input name="imageUrl" placeholder="Image URL">
+  <button>Submit</button>
+</form>
