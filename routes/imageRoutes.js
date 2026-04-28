@@ -12,6 +12,6 @@ router.post("/upload-url", auth, ctrl.uploadFromUrl);
 
 router.get("/user/list", auth, ctrl.listImages);
 router.delete("/image/delete/:id", auth, ctrl.deleteImage);
-router.post("/api/image/host", upload.single("image"), ctrl.apiUpload);
+router.post("/api/image/host", auth, upload.single("image"), ctrl.apiUpload);
 
 module.exports = router;

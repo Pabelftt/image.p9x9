@@ -73,7 +73,28 @@ exports.apiUpload = async (req, res) => {
 
     // CASE 1: file upload (multer)
     if (req.file) {
+      const buffer = fs.readFileSync(req.file.path);
+      const hash = generateHash(buffer);
+
+      // 🔁 duplicate check
+      const exists = await Image.findOne({ hash });
+      if (exists) {
+        fs.unlinkSync(req.file.path);
+        return res.json({
+          success: false,
+          message: "Duplicate image!"
+        });
+      }
+
       const url = process.env.BASE_URL + "/uploads/" + req.file.filename;
+
+      // 🔥 SAVE WITH USER
+      await Image.create({
+        user: req.user.id,
+        filename: req.file.filename,
+        url,
+        hash
+      });
 
       return res.json({
         success: true,
@@ -92,12 +113,32 @@ exports.apiUpload = async (req, res) => {
         responseType: "arraybuffer"
       });
 
+      const buffer = Buffer.from(response.data);
+      const hash = generateHash(buffer);
+
+      // 🔁 duplicate check
+      const exists = await Image.findOne({ hash });
+      if (exists) {
+        return res.json({
+          success: false,
+          message: "Duplicate image!"
+        });
+      }
+
       const filename = Date.now() + ".jpg";
       const filePath = path.join(__dirname, "../public/uploads/", filename);
 
-      fs.writeFileSync(filePath, response.data);
+      fs.writeFileSync(filePath, buffer);
 
       const url = process.env.BASE_URL + "/uploads/" + filename;
+
+      // 🔥 SAVE WITH USER
+      await Image.create({
+        user: req.user.id,
+        filename,
+        url,
+        hash
+      });
 
       return res.json({
         success: true,
