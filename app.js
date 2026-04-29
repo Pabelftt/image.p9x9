@@ -51,7 +51,9 @@ app.use(rateLimit({
 // Routes
 app.use("/", authRoutes);
 app.use("/", imageRoutes);
-
+app.get("/", (req, res) =>{
+  res.redirect("/dashboard")
+})
 
 // Server
 app.listen(process.env.PORT, () => {
