@@ -19,9 +19,17 @@ exports.login = async (req,res)=>{
   const match = await bcrypt.compare(req.body.password, user.password);
   if (!match) return res.send("Wrong password");
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+  const token = jwt.sign(
+    { id: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "365d" } // 🔥 token expiry
+  );
 
-  res.cookie("token", token, { httpOnly: true });
+  res.cookie("token", token, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 365, // 🔥 1 year
+  });
+
   res.redirect("/dashboard");
 };
 
